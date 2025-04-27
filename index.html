@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Consider hosting the logo or using a relative path if possible -->
+    <link rel="icon" type="image/png" href="assets/logo_bg.png">
+    <title>Horizon Consulting | Strategic Business Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom CSS */
+        :root {
+          --theme-purple: #241640;
+          --theme-purple-accent: #58428A;
+          --theme-purple-transparent-heavy: rgba(36, 22, 64, 0.7); /* Example transparency */
+          --theme-purple-transparent-light: rgba(36, 22, 64, 0.2); /* Example transparency */
+        }
+
+        /* Example usage with CSS variable */
+        .bg-theme-purple { background-color: var(--theme-purple); }
+        .bg-theme-purple-accent { background-color: var(--theme-purple-accent); }
+        .text-theme-purple { color: var(--theme-purple); }
+        .text-theme-purple-accent { color: var(--theme-purple-accent); }
+        .border-theme-purple { border-color: var(--theme-purple); }
+        .border-theme-purple-accent { border-color: var(--theme-purple-accent); }
+        .bg-theme-purple-t-heavy { background-color: var(--theme-purple-transparent-heavy); }
+
+        footer {
+            background-color: var(--theme-purple); /* #241640 */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background-color: #c9c4c3; /* Base color */
+        }
+
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* --- BACKGROUND SUGGESTION: Dark Gradient --- */
+            
+            /* --- OPTION A: Fade from Gray to Purple --- */
+            /* background: linear-gradient(180deg, #c9c4c3 0%, var(--theme-purple) 100%); */
+
+            /* --- OPTION B: Fade Gray -> Purple -> Dark Blue/Slate --- */
+             background: linear-gradient(180deg, #c9c4c3 0%, var(--theme-purple) 70%, #1e293b 100%);
+
+            /* --- ALTERNATIVE: Abstract Image (replace URL) --- */
+            /* background: url('your-abstract-background-image.jpg') no-repeat center center; */
+            /* background-size: cover; */
+
+            will-change: transform, opacity;
+            transform: translateY(0) scale(1.1); /* Initial scale */
+            transition: none; /* Let JS handle transitions */
+            opacity: 1; /* Start fully opaque */
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+            /* Removed background color here - let sections handle their subtle overlays */
+            /* background-color: rgba(255, 255, 255, 0.2); */
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.3); /* Keep shadow for depth */
+            min-height: 100vh;
+            transform: translateZ(0); /* Promote to own layer */
+            will-change: transform;
+            transition: transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Navbar styling */
+        .navbar {
+            transition: all 0.5s ease;
+            /* Start slightly more transparent */
+            background-color: rgba(36, 22, 64, 0.7);
+            backdrop-filter: blur(20px); /* Slightly less blur initially */
+        }
+
+        .navbar.scrolled {
+            /* Was: background-color: rgba(15, 23, 42, 0.9); */
+            background-color: rgba(36, 22, 64, 0.85); /* Slightly transparent purple */
+            backdrop-filter: blur(12px); /* Increase blur */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease; /* Add transition to color */
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            /* Was: background-color: #3b82f6; */
+            background-color: var(--theme-purple); /* #241640 */
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Section styling */
+        section {
+            /* Increase default padding slightly if needed, adjust as per design */
+            padding: 8rem 0;
+            /* Add top padding to first section to clear navbar */
+        }
+        #home {
+             padding-top: 10rem; /* Adjust this value based on your navbar height */
+             padding-bottom: 8rem;
+        }
+
+        /* Custom animation */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in-up {
+            opacity: 0;
+            /* Let JS handle the animation trigger */
+           /* animation: fadeInUp 0.8s ease-out forwards; */
+           transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        /* Animation Delays - can be kept if JS handles trigger */
+        .delay-100 { transition-delay: 0.1s; }
+        .delay-200 { transition-delay: 0.2s; }
+        .delay-300 { transition-delay: 0.3s; }
+        .delay-400 { transition-delay: 0.4s; }
+
+        /* Floating card effect */
+        .floating-card {
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+            transform-style: preserve-3d;
+        }
+
+        .floating-card:hover {
+            /* Slightly enhance hover effect */
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 25px 30px -10px rgba(0, 0, 0, 0.15), 0 15px 15px -10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Glass morphism card effect (for testimonials) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05); /* Slightly less opaque */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); /* Add blur to glass cards */
+            border-radius: 0.75rem; /* Ensure rounded corners for blur */
+        }
+
+         /* --- Transition Smoothing Class --- */
+        .section-overlay {
+             /* Add a subtle overlay and consistent blur to sections */
+             background-color: rgba(255, 255, 255, 0.03); /* Very subtle light overlay */
+             backdrop-filter: blur(10px);
+             /* Add padding within the overlay if needed, or keep on section */
+             padding: 8rem 1.5rem; /* px-6 equivalent */
+        }
+        @media (min-width: 1024px) {
+            .section-overlay {
+                padding: 8rem 3rem; /* lg:px-12 equivalent */
+            }
+        }
+         /* Adjust dark sections */
+        .section-overlay-dark {
+              /* Was: background-color: rgba(15, 23, 42, 0.5); */
+            background-color: var(--theme-purple-transparent-heavy); /* rgba(36, 22, 64, 0.7) - Adjust alpha as needed */
+            backdrop-filter: blur(12px);
+            padding: 8rem 1.5rem;
+            color: #e5e7eb; /* Default light text for dark sections */
+        }
+         @media (min-width: 1024px) {
+            .section-overlay-dark {
+                padding: 8rem 3rem; /* lg:px-12 equivalent */
+            }
+        }
+         #home.section-overlay { /* Special case for home padding top */
+            padding-top: 10rem;
+            padding-bottom: 8rem;
+         }
+
+    </style>
+</head>
+<body>
+    <!-- Background container -->
+    <div class="background-container">
+        <div class="background-image" id="backgroundImage"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar fixed top-0 left-0 w-full z-50 py-4 px-6 lg:px-12">
+         <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="#" class="text-white text-2xl font-bold flex items-center">
+                <img src="assets/logo_no_bg.png" alt="Horizon Logo" class="h-8 w-8 mr-2">
+                <span>Wizard Frameworks</span>
+            </a>
+
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="nav-link text-white hover:text-[#241640]" data-translate="nav_home">Home</a>
+                <a href="#services" class="nav-link text-white hover:ttext-[#241640]" data-translate="nav_services">Services</a>
+                <a href="#about" class="nav-link text-white hover:text-blue-400" data-translate="nav_about">About</a>
+                <a href="#team" class="nav-link text-white hover:text-blue-400" data-translate="nav_team">Team</a>
+                <a href="#contact" class="nav-link text-white hover:text-blue-400" data-translate="nav_contact">Contact</a>
+                <div class="relative" id="languageDropdownContainer">
+                    <button id="languageDropdownButton" class="nav-link text-white hover:text-blue-400 flex items-center focus:outline-none">
+                        <span id="languageLabel" data-translate="nav_language">Language</span>
+                        <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                    </button>
+                    <div id="languageDropdownMenu" class="absolute right-0 mt-2 w-24 bg-slate-700 rounded-md shadow-lg py-1 hidden z-50">
+                        <a href="#" data-lang="en" class="language-option block px-4 py-2 text-sm text-gray-200 hover:bg-slate-600">EN</a>
+                        <a href="#" data-lang="de" class="language-option block px-4 py-2 text-sm text-gray-200 hover:bg-slate-600">DE</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="md:hidden text-white text-2xl">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <div class="content-wrapper" id="contentWrapper">
+        <!-- Hero Section -->
+        <!-- Removed backdrop-blur here, apply overlay class -->
+        <section id="home" class="section-overlay">
+            <div class="max-w-7xl mx-auto">
+                <div class="animate-fade-in-up">
+                    <h1 class="text-4xl md:text-6xl font-bold text-gray-100 mb-6 leading-tight" data-translate="hero_title">
+                        Transforming <span class="text-theme-purple-accent">Business</span> Through <br>Strategic <span class="text-theme-purple-accent">Consulting</span>
+                    </h1>
+                    <p class="text-xl text-gray-300 mb-10 max-w-3xl" data-translate="hero_subtitle">
+                        We help businesses navigate complex challenges and unlock their full potential with data-driven insights and innovative strategies.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#contact" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-lg font-medium transition duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl" data-translate="hero_button_start">
+                            Get Started
+                        </a>
+                        <a href="#services" class="bg-gray-300 border-2 border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white px-8 py-3 rounded-lg font-medium transition duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl" data-translate="hero_button_services">
+                            Our Services
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <!-- Removed specific background colors, apply overlay class -->
+        <section id="services" class="section-overlay">
+             <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-100 mb-4 animate-fade-in-up" data-translate="services_title">Our Consulting Services</h2>
+                    <div class="w-20 h-1 bg-blue-500 mx-auto mb-6 animate-fade-in-up delay-100"></div>
+                    <p class="text-xl text-gray-200 max-w-3xl mx-auto animate-fade-in-up delay-200">
+                        We offer comprehensive consulting services tailored to your business needs.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-slate-100/80 dark:bg-slate-800/80 rounded-xl p-8 floating-card animate-fade-in-up delay-100 backdrop-blur-sm">
+                         <div class="text-blue-600 dark:text-blue-400 text-4xl mb-6">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">Strategy Consulting</h3>
+                        <p class="text-gray-600 dark:text-gray-300">
+                            Develop winning strategies with our expert guidance to outperform competitors and achieve sustainable growth.
+                        </p>
+                    </div>
+                     <div class="bg-slate-100/80 dark:bg-slate-800/80 rounded-xl p-8 floating-card animate-fade-in-up delay-200 backdrop-blur-sm">
+                         <div class="text-blue-600 dark:text-blue-400 text-4xl mb-6">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">Financial Advisory</h3>
+                        <p class="text-gray-600 dark:text-gray-300">
+                            Optimize your financial performance with our comprehensive advisory services and data-driven insights.
+                        </p>
+                    </div>
+                    <div class="bg-slate-100/80 dark:bg-slate-800/80 rounded-xl p-8 floating-card animate-fade-in-up delay-300 backdrop-blur-sm">
+                         <div class="text-blue-600 dark:text-blue-400 text-4xl mb-6">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">HR Transformation</h3>
+                        <p class="text-gray-600 dark:text-gray-300">
+                            Transform your human resources to attract, develop and retain top talent in your industry.
+                        </p>
+                    </div>
+                    <div class="bg-slate-100/80 dark:bg-slate-800/80 rounded-xl p-8 floating-card animate-fade-in-up delay-100 backdrop-blur-sm">
+                        <div class="text-blue-600 dark:text-blue-400 text-4xl mb-6"><i class="fas fa-globe"></i></div>
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">Digital Transformation</h3>
+                        <p class="text-gray-600 dark:text-gray-300">Leverage technology to reinvent your business models...</p>
+                    </div>
+                    <div class="bg-slate-100/80 dark:bg-slate-800/80 rounded-xl p-8 floating-card animate-fade-in-up delay-200 backdrop-blur-sm">
+                        <div class="text-blue-600 dark:text-blue-400 text-4xl mb-6"><i class="fas fa-cogs"></i></div>
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">Operations Optimization</h3>
+                        <p class="text-gray-600 dark:text-gray-300">Streamline your operations to reduce costs...</p>
+                    </div>
+                    <div class="bg-slate-100/80 dark:bg-slate-800/80 rounded-xl p-8 floating-card animate-fade-in-up delay-300 backdrop-blur-sm">
+                        <div class="text-blue-600 dark:text-blue-400 text-4xl mb-6"><i class="fas fa-rocket"></i></div>
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">Growth Strategy</h3>
+                        <p class="text-gray-600 dark:text-gray-300">Identify and capitalize on new market opportunities...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <!-- Removed bg-gray-900, apply dark overlay class -->
+         <section id="about" class="section-overlay-dark text-gray-200">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="animate-fade-in-up">
+                         <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">About Horizon Consulting</h2>
+                         <div class="w-20 h-1 bg-blue-500 mb-6"></div> 
+                        <p class="text-gray-300 mb-6"> 
+                            Founded in 2010, Horizon Consulting has grown to become a trusted partner...
+                        </p>
+                        <p class="text-gray-300 mb-8"> 
+                            We believe in a client-centric approach, delivering customized solutions...
+                        </p>
+                        <div class="grid sm:grid-cols-2 gap-6">
+                            <div class="flex items-start">
+                                 <div class="text-blue-400 text-2xl mr-4">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-white mb-2">Proven Results</h4>
+                                     <p class="text-gray-300">90% of clients see improvement...</p> 
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                 <div class="text-blue-400 text-2xl mr-4"> 
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-white mb-2">Global Reach</h4>
+                                    <p class="text-gray-300">Serving clients in 15+ countries...</p> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative animate-fade-in-up delay-100">
+                        <div class="bg-blue-700 h-80 w-full rounded-lg absolute -bottom-4 -right-4 opacity-60"></div>
+                        <div class="bg-white p-2 rounded-lg shadow-xl relative floating-card">
+                            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Team meeting" class="rounded-lg w-full h-auto">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <!-- Apply light overlay -->
+         <section id="team" class="section-overlay">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4 animate-fade-in-up">Meet Our Experts</h2>
+                    <div class="w-20 h-1 bg-blue-500 mx-auto mb-6 animate-fade-in-up delay-100"></div>
+                    <p class="text-xl text-gray-500 max-w-3xl mx-auto animate-fade-in-up delay-200">
+                        Our team combines deep industry knowledge with innovative thinking.
+                    </p>
+                </div>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="bg-slate-100/80 dark:bg-slate-800/80 rounded-lg overflow-hidden shadow-lg floating-card animate-fade-in-up delay-100 backdrop-blur-sm">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="Sarah Johnson" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                             <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1">Sarah Johnson</h3>
+                             <p class="text-blue-600 dark:text-blue-400 font-medium mb-3">CEO & Founder</p>
+                             <p class="text-gray-600 dark:text-gray-300 text-sm">
+                                20+ years in strategic consulting...
+                            </p>
+                            <div class="flex mt-4 space-x-3">
+                                 <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-slate-100/80 dark:bg-slate-800/80 rounded-lg overflow-hidden shadow-lg floating-card animate-fade-in-up delay-200 backdrop-blur-sm">
+                         <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="Michael Chen" class="w-full h-64 object-cover">
+                         <div class="p-6">
+                             <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1">Michael Chen</h3>
+                             <p class="text-blue-600 dark:text-blue-400 font-medium mb-3">Director of Operations</p>
+                             <p class="text-gray-600 dark:text-gray-300 text-sm">Specialist in process optimization...</p>
+                             <div class="flex mt-4 space-x-3"> /* ... social links ... */ </div>
+                        </div>
+                     </div>
+                     <div class="bg-slate-100/80 dark:bg-slate-800/80 rounded-lg overflow-hidden shadow-lg floating-card animate-fade-in-up delay-300 backdrop-blur-sm">
+                         <img src="https://images.unsplash.com/photo-1540569014875-4a0fa0a2bf52?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="David Rodriguez" class="w-full h-64 object-cover">
+                         <div class="p-6">
+                             <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1">David Rodriguez</h3>
+                             <p class="text-blue-600 dark:text-blue-400 font-medium mb-3">Financial Strategist</p>
+                             <p class="text-gray-600 dark:text-gray-300 text-sm">Expert in financial modeling...</p>
+                             <div class="flex mt-4 space-x-3"> /* ... social links ... */ </div>
+                        </div>
+                     </div>
+                     <div class="bg-slate-100/80 dark:bg-slate-800/80 rounded-lg overflow-hidden shadow-lg floating-card animate-fade-in-up delay-400 backdrop-blur-sm">
+                         <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=688&q=80" alt="Emily Wilson" class="w-full h-64 object-cover">
+                         <div class="p-6">
+                             <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1">Emily Wilson</h3>
+                             <p class="text-blue-600 dark:text-blue-400 font-medium mb-3">Digital Transformation Lead</p>
+                             <p class="text-gray-600 dark:text-gray-300 text-sm">Helps businesses leverage technology...</p>
+                             <div class="flex mt-4 space-x-3"> /* ... social links ... */ </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+         <section class="section-overlay-dark text-gray-200">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                     <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 animate-fade-in-up">Client Success Stories</h2>
+                     <div class="w-20 h-1 bg-white mx-auto mb-6 animate-fade-in-up delay-100"></div> 
+                    <p class="text-xl opacity-90 max-w-3xl mx-auto animate-fade-in-up delay-200">
+                        Don't just take our word for it...
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="glass-card p-8 animate-fade-in-up delay-100">
+                        {/* ... testimonial 1 content ... */}
+                         <div class="flex items-center mb-6"> /* ... stars ... */ </div>
+                         <p class="mb-6 italic text-gray-300">"Horizon Consulting transformed our approach..."</p>
+                         <div class="flex items-center"> /* ... client info ... */ </div>
+                    </div>
+                    <div class="glass-card p-8 animate-fade-in-up delay-200">
+                         {/* ... testimonial 2 content ... */}
+                          <div class="flex items-center mb-6"> /* ... stars ... */ </div>
+                         <p class="mb-6 italic text-gray-300">"The operational efficiency improvements..."</p>
+                         <div class="flex items-center"> /* ... client info ... */ </div>
+                    </div>
+                    <div class="glass-card p-8 animate-fade-in-up delay-300">
+                         {/* ... testimonial 3 content ... */}
+                          <div class="flex items-center mb-6"> /* ... stars ... */ </div>
+                         <p class="mb-6 italic text-gray-300">"Their digital transformation roadmap..."</p>
+                         <div class="flex items-center"> /* ... client info ... */ </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <!-- Apply light overlay -->
+         <section id="contact" class="section-overlay">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="animate-fade-in-up">
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-700 mb-6">Get In Touch</h2>
+                        <div class="w-20 h-1 bg-blue-800 mb-6"></div>
+                        <p class="text-gray-500 mb-8 max-w-lg">
+                            Ready to take your business to the next level?...
+                        </p>
+
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                 <div class="text-blue-500 text-2xl mr-4 mt-1"> 
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-700 mb-1">Our Office</h4>
+                                    <p class="text-gray-500">123 Business Avenue...</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="text-blue-500 text-2xl mr-4 mt-1"><i class="fas fa-phone-alt"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-gray-700 mb-1">Phone</h4>
+                                    <p class="text-gray-500">+1 (555) 123-4567</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="text-blue-500 text-2xl mr-4 mt-1"><i class="fas fa-envelope"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 mb-1">Email</h4>
+                                    <p class="text-gray-600">info@horizonconsulting.com</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="animate-fade-in-up delay-100">
+                        <div class="bg-slate-100/80 dark:bg-slate-800/80 rounded-xl shadow-lg floating-card backdrop-blur-sm opacity-80">
+                            <img src="assets/cover.png" alt="Horizon Logo">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class=" text-white py-12 px-6 lg:px-12">
+             <div class="max-w-7xl mx-auto">
+                 <div class="grid md:grid-cols-4 gap-8">
+                 </div>
+                 <div class="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
+                     <p>© 2025 Wizard Frameworks. All rights reserved.</p>
+                 </div>
+             </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const backgroundImage = document.getElementById('backgroundImage');
+            const contentWrapper = document.getElementById('contentWrapper');
+            const navbar = document.querySelector('.navbar');
+
+            // Parallax & Fade Background Effect
+            window.addEventListener('scroll', function() {
+                const scrollPosition = window.scrollY;
+
+                // Parallax: Move background slower than scroll
+                const translateY = scrollPosition * 0.3; // Adjust speed (0.3 = 30% of scroll speed)
+                // Fade Out: Reduce opacity as you scroll down, but not completely
+                const fade = Math.max(1 - scrollPosition / (document.body.scrollHeight / 3), 0.4); // Fade down to 40% opacity over roughly 1/3rd of page height
+
+                backgroundImage.style.transform = `translateY(${translateY}px) scale(1.1)`; // Keep scale if desired
+                backgroundImage.style.opacity = fade;
+
+                // Navbar scroll effect (already in your original code)
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+
+                // Trigger animations on scroll
+                animateOnScroll(); // Call animation check on scroll
+            });
+
+
+            // Mobile menu toggle (placeholder)
+            const mobileMenuButton = document.querySelector('button.md\\:hidden');
+            if(mobileMenuButton) { // Check if exists
+                mobileMenuButton.addEventListener('click', function() {
+                    // Basic toggle for a conceptual mobile menu div
+                    const mobileMenu = document.getElementById('mobileMenu'); // You would need to add this div
+                    if (mobileMenu) {
+                       mobileMenu.classList.toggle('hidden'); // Example toggle
+                    } else {
+                       alert('Mobile menu element not found.');
+                    }
+                });
+            }
+
+
+            // Animate elements when they come into view (using Intersection Observer for better performance)
+            const animatedElements = document.querySelectorAll('.animate-fade-in-up');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        // Optional: Unobserve after animation to save resources
+                        // observer.unobserve(entry.target);
+                    }
+                     // Optional: Reset animation if element scrolls out of view upwards
+                     /* else if (entry.boundingClientRect.top > 0) {
+                         entry.target.style.opacity = '0';
+                         entry.target.style.transform = 'translateY(20px)';
+                     } */
+                });
+            }, {
+                threshold: 0.1 // Trigger when 10% of the element is visible
+            });
+
+            animatedElements.forEach(el => {
+                observer.observe(el);
+            });
+
+            // Initial check in case elements are already in view on load
+            const animateOnScroll = () => {
+                 animatedElements.forEach(element => {
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                     // Fallback for browsers without IntersectionObserver or initial load check
+                     if (elementPosition < windowHeight - 100 && element.style.opacity !== '1') {
+                       element.style.opacity = '1';
+                       element.style.transform = 'translateY(0)';
+                    }
+                 });
+            };
+           // animateOnScroll(); // Run on load via Intersection Observer
+
+            // Floating card tilt effect (keep this if you like it)
+             const floatingCards = document.querySelectorAll('.floating-card');
+             floatingCards.forEach(card => {
+                 card.addEventListener('mousemove', (e) => {
+                     const rect = card.getBoundingClientRect();
+                     const x = e.clientX - rect.left;
+                     const y = e.clientY - rect.top;
+
+                     const centerX = card.offsetWidth / 2;
+                     const centerY = card.offsetHeight / 2;
+
+                     // Max rotation angles (adjust for more/less tilt)
+                     const maxRotate = 8;
+
+                     const angleX = Math.min(Math.max(((centerY - y) / centerY) * maxRotate, -maxRotate), maxRotate);
+                     const angleY = Math.min(Math.max(((x - centerX) / centerX) * maxRotate, -maxRotate), maxRotate);
+
+                     // Apply hover scale/translate along with tilt
+                     card.style.transform = `perspective(1000px) translateY(-10px) scale(1.03) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+                 });
+
+                 card.addEventListener('mouseleave', () => {
+                     // Reset to base floating state (or hover state if preferred)
+                     card.style.transform = 'perspective(1000px) translateY(0) scale(1) rotateX(0) rotateY(0)';
+                     // If you want it to return to the hover state without tilt:
+                     // card.style.transform = 'perspective(1000px) translateY(-10px) scale(1.03) rotateX(0) rotateY(0)';
+                 });
+             });
+
+
+             // --- Language Dropdown Logic ---
+            const languageDropdownButton = document.getElementById('languageDropdownButton');
+            const languageDropdownMenu = document.getElementById('languageDropdownMenu');
+            const languageDropdownContainer = document.getElementById('languageDropdownContainer');
+            const languageOptions = document.querySelectorAll('.language-option');
+            const languageLabel = document.getElementById('languageLabel'); // Get the span for the label
+
+            // Toggle dropdown visibility
+            languageDropdownButton.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent click from immediately closing dropdown via window listener
+                languageDropdownMenu.classList.toggle('hidden');
+            });
+
+            // Close dropdown if clicked outside
+            window.addEventListener('click', (event) => {
+                if (!languageDropdownContainer.contains(event.target)) {
+                    languageDropdownMenu.classList.add('hidden');
+                }
+            });
+
+            // --- Basic Language Switching Simulation ---
+            // Store simple translations (add more keys/elements as needed)
+            const translations = {
+                en: {
+                    // Navbar
+                    'nav_home': 'Home',
+                    'nav_services': 'Services',
+                    'nav_about': 'About',
+                    'nav_team': 'Team',
+                    'nav_contact': 'Contact',
+                    'nav_language': 'Language',
+                    // Hero Section
+                    'hero_title': 'Transforming <span class="text-theme-purple-accent">Business</span> Through <br>Strategic <span class="text-theme-purple-accent">Consulting</span>',
+                    'hero_subtitle': 'We help businesses navigate complex challenges and unlock their full potential with data-driven insights and innovative strategies.',
+                    'hero_button_start': 'Get Started',
+                    'hero_button_services': 'Our Services',
+                    // Add more keys for other sections...
+                    'services_title': 'Our Consulting Services',
+                    'contact_title': 'Get In Touch',
+                },
+                de: {
+                    // Navbar
+                    'nav_home': 'Startseite',
+                    'nav_services': 'Dienstleistungen',
+                    'nav_about': 'Über uns',
+                    'nav_team': 'Team',
+                    'nav_contact': 'Kontakt',
+                    'nav_language': 'Sprache',
+                    // Hero Section
+                    'hero_title': 'Geschäfts-<span class="text-theme-purple-accent">Transformation</span> durch <br>Strategische <span class="text-theme-purple-accent">Beratung</span>',
+                    'hero_subtitle': 'Wir helfen Unternehmen, komplexe Herausforderungen zu meistern und ihr volles Potenzial durch datengesteuerte Erkenntnisse und innovative Strategien auszuschöpfen.',
+                    'hero_button_start': 'Loslegen',
+                    'hero_button_services': 'Unsere Dienstleistungen',
+                    // Add more keys for other sections...
+                    'services_title': 'Unsere Beratungsleistungen',
+                    'contact_title': 'Kontakt aufnehmen',
+                }
+            };
+
+            let currentLanguage = 'en'; // Default language
+
+            // Function to update text content based on language
+            function updateTexts(lang) {
+                if (!translations[lang]) return; // Exit if language not found
+
+                currentLanguage = lang;
+                languageLabel.textContent = translations[lang]['nav_language']; // Update dropdown button label
+
+                // Find elements with data-translate attribute and update them
+                document.querySelectorAll('[data-translate]').forEach(element => {
+                    const key = element.getAttribute('data-translate');
+                    if (translations[lang][key]) {
+                        // Use innerHTML for keys that contain HTML tags (like hero_title)
+                        if (key === 'hero_title') {
+                             element.innerHTML = translations[lang][key];
+                        } else {
+                             element.textContent = translations[lang][key];
+                        }
+                    } else {
+                        console.warn(`Translation key "${key}" not found for language "${lang}"`);
+                    }
+                });
+
+                // Optionally: Add a class to the selected language option for styling
+                 languageOptions.forEach(opt => {
+                    if(opt.getAttribute('data-lang') === lang) {
+                        opt.classList.add('font-bold', 'bg-slate-600'); // Example styling
+                    } else {
+                        opt.classList.remove('font-bold', 'bg-slate-600');
+                    }
+                });
+
+                console.log(`Language switched to: ${lang.toUpperCase()}`);
+            }
+
+            // Add event listeners to language options
+            languageOptions.forEach(option => {
+                option.addEventListener('click', (event) => {
+                    event.preventDefault(); // Prevent page jump
+                    const selectedLang = event.target.getAttribute('data-lang');
+                    updateTexts(selectedLang);
+                    languageDropdownMenu.classList.add('hidden'); // Hide dropdown after selection
+                });
+            });
+        });
+    </script>
+</body>
+</html>
