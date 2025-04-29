@@ -738,7 +738,10 @@
 
             // Function to update text content based on language
             function updateTexts(lang) {
-                if (!translations[lang]) return; // Exit if language not found
+                if (!translations[lang]) {
+                    console.warn(`Language "${lang}" not found in translations. Defaulting to 'en'.`);
+                    lang = 'en'; // Fallback safely
+                }
 
                 currentLanguage = lang;
                 languageLabel.textContent = translations[lang]['nav_language']; // Update dropdown button label
@@ -769,6 +772,27 @@
 
                 console.log(`Language switched to: ${lang.toUpperCase()}`);
             }
+
+            // --- Automatic Language Detection ---
+            function detectInitialLanguage() {
+                const browserLanguages = navigator.languages || [navigator.language || navigator.userLanguage];
+
+                // Find the first language code that starts with 'de'
+                const germanMatch = browserLanguages.find(lang => lang && lang.toLowerCase().startsWith('de'));
+
+                if (germanMatch) {
+                    return 'de';
+                } else {
+                    return 'en'; // Default to English
+                }
+            }
+
+            // --- Initialize Page ---
+            // 1. Detect initial language
+            const initialLang = detectInitialLanguage();
+            // 2. Apply the detected (or default) language
+            updateTexts(initialLang);
+
 
             // Add event listeners to language options
             languageOptions.forEach(option => {
