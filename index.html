@@ -14,6 +14,7 @@
           --theme-purple: #241640;
           --theme-purple-accent: #58428A;
           --theme-purple-saturated: #533696;
+          --theme-purple-light: #A794CE;
           --theme-purple-transparent-heavy: rgba(36, 22, 64, 0.7); /* Example transparency */
           --theme-purple-transparent-light: rgba(36, 22, 64, 0.2); /* Example transparency */
         }
@@ -23,6 +24,7 @@
         .bg-theme-purple-accent { background-color: var(--theme-purple-accent); }
         .text-theme-purple { color: var(--theme-purple); }
         .text-theme-purple-accent { color: var(--theme-purple-accent); }
+        .text-theme-purple-light { color: var(--theme-purple-light); }
         .border-theme-purple { border-color: var(--theme-purple); }
         .border-theme-purple-accent { border-color: var(--theme-purple-accent); }
         .bg-theme-purple-t-heavy { background-color: var(--theme-purple-transparent-heavy); }
@@ -56,32 +58,23 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* --- BACKGROUND SUGGESTION: Dark Gradient --- */
-            
-            /* --- OPTION A: Fade from Gray to Purple --- */
-            /* background: linear-gradient(180deg, #c9c4c3 0%, var(--theme-purple) 100%); */
-
-            /* --- OPTION B: Fade Gray -> Purple -> Dark Blue/Slate --- */
-             background: linear-gradient(180deg, #c9c4c3 0%, var(--theme-purple) 70%, #1e293b 100%);
-
-            /* --- ALTERNATIVE: Abstract Image (replace URL) --- */
-            /* background: url('your-abstract-background-image.jpg') no-repeat center center; */
-            /* background-size: cover; */
-
+            background: url('assets/bg.jpg') no-repeat center center;
+            background-size: cover;
             will-change: transform, opacity;
             transform: translateY(0) scale(1.1); /* Initial scale */
             transition: none; /* Let JS handle transitions */
             opacity: 1; /* Start fully opaque */
+            /* Add the blur effect */
+            filter: blur(6px);
+            -webkit-filter: blur(6px);
         }
 
         .content-wrapper {
             position: relative;
             z-index: 1;
-            /* Removed background color here - let sections handle their subtle overlays */
-            /* background-color: rgba(255, 255, 255, 0.2); */
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.3); /* Keep shadow for depth */
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
             min-height: 100vh;
-            transform: translateZ(0); /* Promote to own layer */
+            transform: translateZ(0);
             will-change: transform;
             transition: transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
         }
@@ -94,28 +87,19 @@
         /* Navbar styling */
         .navbar {
             transition: all 0.5s ease;
-            /* Start slightly more transparent */
             background-color: rgba(36, 22, 64, 0.7);
-            backdrop-filter: blur(20px); /* Slightly less blur initially */
-
-            /* Softer, slightly more spread out shadow */
-            box-shadow: 0 6px 25px -5px rgba(36, 22, 64, 0.4); /* Example: Y-offset, Blur, Spread, Color (themed) */
-
-             /* Add the mask */
-            /*mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%); /* For Safari/Chrome */
+            backdrop-filter: blur(20px);
+            box-shadow: 0 6px 25px -5px rgba(36, 22, 64, 0.4);
         }
 
         .navbar.scrolled {
-            /* Was: background-color: rgba(15, 23, 42, 0.9); */
-            background-color: rgba(36, 22, 64, 0.85); /* Slightly transparent purple */
-            backdrop-filter: blur(12px); /* Increase blur */
-            /*box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);*/
+            background-color: rgba(36, 22, 64, 0.85);
+            backdrop-filter: blur(12px);
         }
 
         .nav-link {
             position: relative;
-            transition: color 0.3s ease; /* Add transition to color */
+            transition: color 0.3s ease;
         }
 
         .nav-link::after {
@@ -125,8 +109,7 @@
             height: 2px;
             bottom: -2px;
             left: 0;
-            /* Was: background-color: #3b82f6; */
-            background-color: var(--theme-purple); /* #241640 */
+            background-color: var(--theme-purple);
             transition: width 0.3s ease;
         }
 
@@ -134,31 +117,61 @@
             width: 100%;
         }
 
-        /* Section styling */
+        /* Section styling - Apply padding ONLY here */
         section {
-            /* Increase default padding slightly if needed, adjust as per design */
-            padding: 8rem 0;
-            /* Add top padding to first section to clear navbar */
+            padding: 8rem 1.5rem; /* Default padding */
+            position: relative; /* Added for potential stacking context improvements */
+             /* Optional: Hint for hardware acceleration */
+            transform: translateZ(0);
         }
+        /* Apply larger horizontal padding on larger screens */
+        @media (min-width: 1024px) {
+            section {
+                padding-left: 3rem;
+                padding-right: 3rem;
+            }
+        }
+        /* Override padding for the #home section */
         #home {
-             padding-top: 10rem; /* Adjust this value based on your navbar height */
+             padding-top: 10rem;
              padding-bottom: 8rem;
+             /* Horizontal padding is inherited from the base 'section' rule */
         }
+
+
+        /* --- Overlay Classes - NO PADDING HERE --- */
+        .section-overlay {
+            background-color: rgba(255, 255, 255, 0.03); /* Light overlay */
+            /*backdrop-filter: blur(6.1px);*/
+             /* REMOVED ALL PADDING RULES */
+        }
+        .section-overlay-dark {
+            background-color: var(--theme-purple-transparent-heavy); /* Dark overlay */
+            /*backdrop-filter: blur(12px);*/
+            color: #e5e7eb; /* Default light text for dark sections */
+             /* REMOVED ALL PADDING RULES */
+        }
+        /* REMOVED the redundant media queries for overlays */
+        /* REMOVED the unused -base classes */
+
+
+        /* Optional: Negative Margin Overlap Hack (Uncomment if padding cleanup isn't enough) */
+        /*
+        section + section {
+           margin-top: -1px;
+        }
+        */
+
 
         /* Custom animation */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .animate-fade-in-up {
             opacity: 0;
-            /* Let JS handle the animation trigger */
-           /* animation: fadeInUp 0.8s ease-out forwards; */
-           transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
-
-        /* Animation Delays - can be kept if JS handles trigger */
         .delay-100 { transition-delay: 0.1s; }
         .delay-200 { transition-delay: 0.2s; }
         .delay-300 { transition-delay: 0.3s; }
@@ -169,52 +182,18 @@
             transition: transform 0.5s ease, box-shadow 0.5s ease;
             transform-style: preserve-3d;
         }
-
         .floating-card:hover {
-            /* Slightly enhance hover effect */
             transform: translateY(-12px) scale(1.03);
             box-shadow: 0 25px 30px -10px rgba(0, 0, 0, 0.15), 0 15px 15px -10px rgba(0, 0, 0, 0.1);
         }
 
         /* Glass morphism card effect (for testimonials) */
         .glass-card {
-            background: rgba(255, 255, 255, 0.05); /* Slightly less opaque */
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px); /* Add blur to glass cards */
-            border-radius: 0.75rem; /* Ensure rounded corners for blur */
+            backdrop-filter: blur(10px);
+            border-radius: 0.75rem;
         }
-
-         /* --- Transition Smoothing Class --- */
-        .section-overlay {
-             /* Add a subtle overlay and consistent blur to sections */
-             background-color: rgba(255, 255, 255, 0.03); /* Very subtle light overlay */
-             backdrop-filter: blur(10px);
-             /* Add padding within the overlay if needed, or keep on section */
-             padding: 8rem 1.5rem; /* px-6 equivalent */
-        }
-        @media (min-width: 1024px) {
-            .section-overlay {
-                padding: 8rem 3rem; /* lg:px-12 equivalent */
-            }
-        }
-         /* Adjust dark sections */
-        .section-overlay-dark {
-              /* Was: background-color: rgba(15, 23, 42, 0.5); */
-            background-color: var(--theme-purple-transparent-heavy); /* rgba(36, 22, 64, 0.7) - Adjust alpha as needed */
-            backdrop-filter: blur(12px);
-            padding: 8rem 1.5rem;
-            color: #e5e7eb; /* Default light text for dark sections */
-        }
-         @media (min-width: 1024px) {
-            .section-overlay-dark {
-                padding: 8rem 3rem; /* lg:px-12 equivalent */
-            }
-        }
-         #home.section-overlay { /* Special case for home padding top */
-            padding-top: 10rem;
-            padding-bottom: 8rem;
-         }
-
     </style>
 </head>
 <body>
@@ -263,7 +242,7 @@
             <div class="max-w-7xl mx-auto">
                 <div class="animate-fade-in-up">
                     <h1 class="text-4xl md:text-6xl font-bold text-gray-100 mb-6 leading-tight" data-translate="hero_title">
-                        Transforming <span class="text-theme-purple-accent">Business</span> Through <br>Strategic <span class="text-theme-purple-accent">Consulting</span>
+                        Transforming <span class="text-theme-purple-light">Business</span> Through <br>Strategic <span class="text-theme-purple-accent">Consulting</span>
                     </h1>
                     <p class="text-xl text-gray-300 mb-10 max-w-3xl" data-translate="hero_subtitle">
                         We help businesses navigate complex challenges and unlock their full potential with data-driven insights and innovative strategies.
@@ -550,9 +529,13 @@
             function updateBackgroundOnScroll() {
                 const scrollPosition = window.scrollY;
                 // Parallax: Move background slower than scroll
-                const translateY = scrollPosition * 0.3; // Adjust speed
-                // Fade Out: Reduce opacity as you scroll down, but not completely
-                const fade = Math.max(1 - scrollPosition / (document.body.scrollHeight / 3), 0.4); // Fade down to 40% opacity over roughly 1/3rd of page height
+                const translateY = scrollPosition * 0; // Adjust speed
+
+                // Fade faster over a fixed pixel distance
+                const fadePixelDistance = 1000; // Pixels to scroll before fade completes. Decrease for faster fade.
+                // Decide the minimum opacity (0 for complete fade-out)
+                const minimumOpacity = 0;
+                const fade = Math.max(1 - scrollPosition / fadePixelDistance, minimumOpacity);
 
                 // Check if backgroundImage exists before trying to style it
                 if (backgroundImage) {
@@ -707,7 +690,7 @@
                     'nav_contact': 'Contact',
                     'nav_language': 'Language',
                     // Hero Section
-                    'hero_title': 'Transforming <span class="text-theme-purple-accent">Business</span> Through <br>Strategic <span class="text-theme-purple-accent">Consulting</span>',
+                    'hero_title': 'Transforming <span class="text-theme-purple-light">Business</span> Through <br>Strategic <span class="text-theme-purple-light">Consulting</span>',
                     'hero_subtitle': 'We help businesses navigate complex challenges and unlock their full potential with data-driven insights and innovative strategies.',
                     'hero_button_start': 'Get Started',
                     'hero_button_services': 'Our Services',
